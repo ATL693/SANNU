@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b2559">
+<title>Sannu: Learn Hausa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1b2559;--bg:#f3f5fb;--card:#fff;--line:#d5daee;--text:#1a1d33;--mute:#5b6285;--go:#2f7d5b;--gold:#f2b632;--bad:#b3392f;--r:16px}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#aab6f5;--bg:#0f1330;--card:#171c40;--line:#2a3166;--text:#eef0ff;--mute:#9aa2d1;--go:#5cc596;--gold:#f2b632;--bad:#ff8a7e}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Noto Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100%;
+padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+#app{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+h1,h2{margin:0;line-height:1.15}
+h1{font-size:2.4rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+h2{font-size:1.3rem}
+.sub{color:var(--mute);margin:6px 0 0}
+.stats{display:flex;gap:10px;margin:18px 0}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.stat b{display:block;font-size:1.4rem}
+.stat span{font-size:.8rem;color:var(--mute)}
+.lesson{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+border-radius:var(--r);padding:14px;margin-bottom:10px;font:inherit;color:inherit;cursor:pointer}
+.lesson .ic{font-size:1.7rem;width:48px;height:48px;display:grid;place-items:center;background:var(--bg);border-radius:12px}
+.lesson b{display:block;font-size:1.05rem}
+.lesson small{color:var(--mute)}
+.lesson .done{margin-left:auto;color:var(--go);font-weight:800}
+button{font:inherit}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn{background:var(--ink);color:var(--bg);border:0;border-radius:12px;padding:14px 18px;font-weight:600;cursor:pointer;width:100%}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:10px;margin-top:14px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.back{background:none;border:0;color:var(--ink);font-weight:600;cursor:pointer;padding:6px 0}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--go);transition:width .3s}
+/* the one memorable element: embroidery-style border on the word card */
+.flash{position:relative;min-height:240px;display:grid;place-items:center;text-align:center;padding:36px 24px;border-radius:20px;
+background:var(--card);cursor:pointer;border:10px solid transparent;
+background-image:linear-gradient(var(--card),var(--card)),conic-gradient(from 45deg at 50% 50%,var(--ink) 0 25%,var(--gold) 0 50%,var(--go) 0 75%,var(--ink) 0);
+background-origin:border-box;background-clip:padding-box,border-box;border-image:none}
+.flash .w{font-size:2.3rem;font-weight:800;color:var(--ink)}
+.flash .e{font-size:1.5rem;color:var(--go);font-weight:600}
+.flash .hint{position:absolute;bottom:12px;left:0;right:0;font-size:.8rem;color:var(--mute)}
+.q{font-size:1.9rem;font-weight:800;color:var(--ink);text-align:center;margin:10px 0 22px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;color:inherit;cursor:pointer}
+.opt.ok{border-color:var(--go);background:color-mix(in srgb,var(--go) 14%,var(--card))}
+.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+.big{font-size:3rem;text-align:center;margin:20px 0 4px}
+.center{text-align:center}
+.note{font-size:.8rem;color:var(--mute);margin-top:22px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ---------- Content (add more lessons here) ---------- */
+const LESSONS=[
+{id:"gaisuwa",ic:"👋",t:"Gaisuwa",e:"Greetings",w:[
+["Sannu","Hello"],["Barka da safe","Good morning"],["Barka da rana","Good afternoon"],["Barka da yamma","Good evening"],
+["Ina kwana?","How did you sleep?"],["Lafiya lau","Fine, well"],["Na gode","Thank you"],["Sai an jima","See you later"]]},
+{id:"lambobi",ic:"🔢",t:"Lambobi",e:"Numbers 1–10",w:[
+["ɗaya","one"],["biyu","two"],["uku","three"],["huɗu","four"],["biyar","five"],["shida","six"],["bakwai","seven"],["takwas","eight"],["tara","nine"],["goma","ten"]]},
+{id:"abinci",ic:"🍚",t:"Abinci",e:"Food and drink",w:[
+["ruwa","water"],["shinkafa","rice"],["nama","meat"],["burodi","bread"],["madara","milk"],["kifi","fish"],["wake","beans"],["gishiri","salt"]]},
+{id:"iyali",ic:"👪",t:"Iyali",e:"Family and people",w:[
+["uwa","mother"],["uba","father"],["ɗa","son"],["'ya","daughter"],["aboki","friend"],["yaro","boy"],["yarinya","girl"],["malami","teacher"]]},
+{id:"kasuwa",ic:"🛍️",t:"Kasuwa",e:"At the market",w:[
+["kasuwa","market"],["kuɗi","money"],["Nawa ne?","How much is it?"],["mai tsada","expensive"],["mai arha","cheap"],["Ina son wannan","I want this"]]}
+];
+const ALL=LESSONS.flatMap(l=>l.w);
+
+/* ---------- Progress (saved in this browser; swap for Firebase later) ---------- */
+const store={get(){try{return JSON.parse(localStorage.getItem("sannu")||"{}")}catch(e){return{}}},set(v){try{localStorage.setItem("sannu",JSON.stringify(v))}catch(e){}}};
+let S=Object.assign({xp:0,best:{},streak:0,last:""},store.get());
+const day=d=>new Date(d).toISOString().slice(0,10);
+function finish(id,score,total){
+  S.xp+=score*10;S.best[id]=Math.max(S.best[id]||0,score);
+  const t=day(Date.now());
+  if(S.last!==t){S.streak=S.last===day(Date.now()-864e5)?S.streak+1:1;S.last=t}
+  store.set(S);
+}
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const view=h=>{$("#app").innerHTML=h;window.scrollTo(0,0)};
+
+/* ---------- Screens ---------- */
+function home(){
+  view(`<h1>Sannu</h1><p class="sub">Learn Hausa, one small lesson a day.</p>
+  <div class="stats"><div class="stat"><b>${S.streak}</b><span>day streak</span></div><div class="stat"><b>${S.xp}</b><span>points</span></div></div>
+  ${LESSONS.map((l,i)=>`<button class="lesson" data-i="${i}"><span class="ic">${l.ic}</span>
+  <span><b>${l.t}</b><small>${l.e} · ${l.w.length} words</small></span>${S.best[l.id]?`<span class="done">${S.best[l.id]}/${l.w.length}</span>`:""}</button>`).join("")}
+  <p class="note">Hausa words here should be checked by a native speaker before you launch.</p>`);
+  document.querySelectorAll(".lesson").forEach(b=>b.onclick=()=>learn(+b.dataset.i));
+}
+
+function learn(i,c=0,flip=false){
+  const l=LESSONS[i],w=l.w[c];
+  view(`<div class="top"><button class="back" id="b">‹ Lessons</button><span class="sub">${c+1} / ${l.w.length}</span></div>
+  <div class="bar"><i style="width:${(c+1)/l.w.length*100}%"></i></div>
+  <h2 style="margin-bottom:14px">${l.t}</h2>
+  <div class="flash" id="f" role="button" tabindex="0" aria-label="Flip card">
+    <div>${flip?`<div class="e">${esc(w[1])}</div>`:`<div class="w">${esc(w[0])}</div>`}</div>
+    <div class="hint">${flip?"Tap to see Hausa":"Tap to see English"}</div></div>
+  <div class="row"><button class="btn alt" id="p" ${c?"":"disabled"}>Back</button>
+  ${c<l.w.length-1?`<button class="btn" id="n">Next word</button>`:`<button class="btn" id="q">Start quiz</button>`}</div>`);
+  $("#b").onclick=home;
+  const f=$("#f");f.onclick=()=>learn(i,c,!flip);f.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();learn(i,c,!flip)}};
+  if($("#p"))$("#p").onclick=()=>learn(i,c-1);
+  if($("#n"))$("#n").onclick=()=>learn(i,c+1);
+  if($("#q"))$("#q").onclick=()=>quiz(i);
+}
+
+function quiz(i){
+  const l=LESSONS[i],qs=shuffle(l.w).map((w,k)=>{
+    const toEn=k%2===0, ans=toEn?w[1]:w[0];
+    const pool=ALL.map(x=>toEn?x[1]:x[0]).filter(x=>x!==ans);
+    return{q:toEn?w[0]:w[1],ans,opts:shuffle([ans,...shuffle([...new Set(pool)]).slice(0,3)]),toEn};
+  });
+  let n=0,score=0;
+  const step=()=>{
+    if(n>=qs.length){finish(l.id,score,qs.length);return end(i,score,qs.length)}
+    const q=qs[n];
+    view(`<div class="top"><button class="back" id="b">‹ Lessons</button><span class="sub">${n+1} / ${qs.length}</span></div>
+    <div class="bar"><i style="width:${n/qs.length*100}%"></i></div>
+    <p class="sub center">${q.toEn?"What does this mean?":"How do you say this in Hausa?"}</p>
+    <div class="q">${esc(q.q)}</div>
+    ${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("")}`);
+    $("#b").onclick=home;
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const right=b.dataset.o===q.ans;if(right)score++;
+      document.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(x.dataset.o===q.ans)x.classList.add("ok")});
+      if(!right)b.classList.add("no");
+      setTimeout(()=>{n++;step()},right?600:1400);
+    });
+  };
+  step();
+}
+
+function end(i,score,total){
+  const l=LESSONS[i],good=score>=total*.7;
+  view(`<div class="big">${good?"🎉":"💪"}</div><h2 class="center">${score} / ${total}</h2>
+  <p class="sub center">${good?"Madalla! Great work.":"Keep going. Review the words and try again."}</p>
+  <div class="stats"><div class="stat"><b>${S.streak}</b><span>day streak</span></div><div class="stat"><b>${S.xp}</b><span>points</span></div></div>
+  <div class="row"><button class="btn alt" id="r">Review words</button><button class="btn" id="a">Try again</button></div>
+  <div class="row"><button class="btn alt" id="h">All lessons</button></div>`);
+  $("#r").onclick=()=>learn(i);$("#a").onclick=()=>quiz(i);$("#h").onclick=home;
+}
+
+home();
+</script>
+</body>
+</html>
