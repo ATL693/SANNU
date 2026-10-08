@@ -53,6 +53,14 @@ background-origin:border-box;background-clip:padding-box,border-box;border-image
 .big{font-size:3rem;text-align:center;margin:20px 0 4px}
 .center{text-align:center}
 .note{font-size:.8rem;color:var(--mute);margin-top:22px}
+#log{min-height:260px;margin:14px 0}
+.bub{max-width:88%;padding:10px 14px;border-radius:16px;margin-bottom:10px;line-height:1.45;word-wrap:break-word}
+.bub.user{margin-left:auto;background:var(--ink);color:var(--bg);border-bottom-right-radius:4px}
+.bub.assistant{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bub.wait{color:var(--mute);font-style:italic}
+.send{display:flex;gap:8px}
+.send input{flex:1;font:inherit;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);min-width:0}
+.send .btn{width:auto}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -96,10 +104,12 @@ const view=h=>{$("#app").innerHTML=h;window.scrollTo(0,0)};
 function home(){
   view(`<h1>Sannu</h1><p class="sub">Learn Hausa, one small lesson a day.</p>
   <div class="stats"><div class="stat"><b>${S.streak}</b><span>day streak</span></div><div class="stat"><b>${S.xp}</b><span>points</span></div></div>
+  <button class="lesson" id="chat"><span class="ic">💬</span><span><b>Magana</b><small>Chat with your AI tutor</small></span></button>
   ${LESSONS.map((l,i)=>`<button class="lesson" data-i="${i}"><span class="ic">${l.ic}</span>
   <span><b>${l.t}</b><small>${l.e} · ${l.w.length} words</small></span>${S.best[l.id]?`<span class="done">${S.best[l.id]}/${l.w.length}</span>`:""}</button>`).join("")}
   <p class="note">Hausa words here should be checked by a native speaker before you launch.</p>`);
-  document.querySelectorAll(".lesson").forEach(b=>b.onclick=()=>learn(+b.dataset.i));
+  document.querySelectorAll(".lesson[data-i]").forEach(b=>b.onclick=()=>learn(+b.dataset.i));
+  $("#chat").onclick=()=>chat();
 }
 
 function learn(i,c=0,flip=false){
@@ -153,6 +163,44 @@ function end(i,score,total){
   <div class="row"><button class="btn alt" id="r">Review words</button><button class="btn" id="a">Try again</button></div>
   <div class="row"><button class="btn alt" id="h">All lessons</button></div>`);
   $("#r").onclick=()=>learn(i);$("#a").onclick=()=>quiz(i);$("#h").onclick=home;
+}
+
+/* ---------- AI chat (talks to your Cloudflare Worker) ---------- */
+const WORKER_URL="https://YOUR-WORKER.YOUR-NAME.workers.dev"; // <- put your Worker URL here
+const FREE_PER_DAY=10;
+let H=[];
+const usedToday=()=>S.chatDay===day(Date.now())?(S.chatN||0):0;
+const bub=m=>`<div class="bub ${m.role}">${esc(m.content).replace(/\n/g,"<br>")}</div>`;
+
+function chat(){
+  view(`<div class="top"><button class="back" id="b">\u2039 Lessons</button><span class="sub" id="left"></span></div>
+  <h2>Magana</h2><p class="sub">Write in Hausa or English. Your tutor replies in Hausa and corrects you.</p>
+  <div id="log"></div>
+  <div class="send"><input id="t" placeholder="Rubuta nan... (type here)" maxlength="300" autocomplete="off"><button class="btn" id="s">Send</button></div>`);
+  $("#b").onclick=home;
+  const log=$("#log"),input=$("#t"),left=()=>{$("#left").textContent=Math.max(0,FREE_PER_DAY-usedToday())+" free messages left today"};
+  const paint=extra=>{log.innerHTML=(H.length?H.map(bub).join(""):`<div class="bub assistant">Sannu! Ina so in taimaka maka. Say hello in Hausa, or ask how to say something.</div>`)+(extra||"");window.scrollTo(0,document.body.scrollHeight)};
+  left();paint();
+  async function send(){
+    const text=input.value.trim();if(!text)return;
+    if(usedToday()>=FREE_PER_DAY){paint(`<div class="bub assistant">You have used today's free messages. Come back tomorrow.</div>`);return}
+    input.value="";H.push({role:"user",content:text});paint(`<div class="bub assistant wait">...</div>`);
+    $("#s").disabled=true;
+    try{
+      const r=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:H})});
+      if(!r.ok)throw new Error(r.status);
+      const d=await r.json();
+      H.push({role:"assistant",content:d.reply||"..."});
+      S.chatDay=day(Date.now());S.chatN=usedToday()+1;store.set(S);
+      paint();
+    }catch(e){
+      H.pop();paint(`<div class="bub assistant">Could not reach the tutor. Check your connection and try again.</div>`);
+      input.value=text;
+    }
+    $("#s").disabled=false;left();input.focus();
+  }
+  $("#s").onclick=send;
+  input.onkeydown=e=>{if(e.key==="Enter")send()};
 }
 
 home();
