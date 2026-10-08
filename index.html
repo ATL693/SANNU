@@ -1,303 +1,901 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ha">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1b2559">
-<title>Sannu: Learn Hausa</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#1b2559;--bg:#f3f5fb;--card:#fff;--line:#d5daee;--text:#1a1d33;--mute:#5b6285;--go:#2f7d5b;--gold:#f2b632;--bad:#b3392f;--r:16px}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#aab6f5;--bg:#0f1330;--card:#171c40;--line:#2a3166;--text:#eef0ff;--mute:#9aa2d1;--go:#5cc596;--gold:#f2b632;--bad:#ff8a7e}}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{font-family:'Noto Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100%;
-padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
-#app{max-width:520px;margin:0 auto;padding:20px 16px 40px}
-h1,h2{margin:0;line-height:1.15}
-h1{font-size:2.4rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
-h2{font-size:1.3rem}
-.sub{color:var(--mute);margin:6px 0 0}
-.stats{display:flex;gap:10px;margin:18px 0}
-.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
-.stat b{display:block;font-size:1.4rem}
-.stat span{font-size:.8rem;color:var(--mute)}
-.lesson{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
-border-radius:var(--r);padding:14px;margin-bottom:10px;font:inherit;color:inherit;cursor:pointer}
-.lesson .ic{font-size:1.7rem;width:48px;height:48px;display:grid;place-items:center;background:var(--bg);border-radius:12px}
-.lesson b{display:block;font-size:1.05rem}
-.lesson small{color:var(--mute)}
-.lesson .done{margin-left:auto;color:var(--go);font-weight:800}
-button{font:inherit}
-button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.btn{background:var(--ink);color:var(--bg);border:0;border-radius:12px;padding:14px 18px;font-weight:600;cursor:pointer;width:100%}
-.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.row{display:flex;gap:10px;margin-top:14px}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.back{background:none;border:0;color:var(--ink);font-weight:600;cursor:pointer;padding:6px 0}
-.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:18px}
-.bar i{display:block;height:100%;background:var(--go);transition:width .3s}
-/* the one memorable element: embroidery-style border on the word card */
-.flash{position:relative;min-height:240px;display:grid;place-items:center;text-align:center;padding:36px 24px;border-radius:20px;
-background:var(--card);cursor:pointer;border:10px solid transparent;
-background-image:linear-gradient(var(--card),var(--card)),conic-gradient(from 45deg at 50% 50%,var(--ink) 0 25%,var(--gold) 0 50%,var(--go) 0 75%,var(--ink) 0);
-background-origin:border-box;background-clip:padding-box,border-box;border-image:none}
-.flash .w{font-size:2.3rem;font-weight:800;color:var(--ink)}
-.flash .e{font-size:1.5rem;color:var(--go);font-weight:600}
-.flash .hint{position:absolute;bottom:12px;left:0;right:0;font-size:.8rem;color:var(--mute)}
-.q{font-size:1.9rem;font-weight:800;color:var(--ink);text-align:center;margin:10px 0 22px}
-.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;color:inherit;cursor:pointer}
-.opt.ok{border-color:var(--go);background:color-mix(in srgb,var(--go) 14%,var(--card))}
-.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
-.big{font-size:3rem;text-align:center;margin:20px 0 4px}
-.center{text-align:center}
-.note{font-size:.8rem;color:var(--mute);margin-top:22px}
-#log{min-height:260px;margin:14px 0}
-.bub{max-width:88%;padding:10px 14px;border-radius:16px;margin-bottom:10px;line-height:1.45;word-wrap:break-word}
-.bub.user{margin-left:auto;background:var(--ink);color:var(--bg);border-bottom-right-radius:4px}
-.bub.assistant{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
-.bub.wait{color:var(--mute);font-style:italic}
-.send{display:flex;gap:8px}
-.send input{flex:1;font:inherit;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);min-width:0}
-.send .btn{width:auto}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
-</head>
-<body>
-<div id="app"></div>
-<script>
-/* ---------- Content (add more lessons here) ---------- */
-const LESSONS=[
-{id:"gaisuwa",ic:"👋",t:"Gaisuwa",e:"Greetings",w:[
-["Sannu","Hello"],["Barka da safe","Good morning"],["Barka da rana","Good afternoon"],["Barka da yamma","Good evening"],
-["Ina kwana?","How did you sleep?"],["Lafiya lau","Fine, well"],["Na gode","Thank you"],["Sai an jima","See you later"]]},
-{id:"lambobi",ic:"🔢",t:"Lambobi",e:"Numbers 1–10",w:[
-["ɗaya","one"],["biyu","two"],["uku","three"],["huɗu","four"],["biyar","five"],["shida","six"],["bakwai","seven"],["takwas","eight"],["tara","nine"],["goma","ten"]]},
-{id:"abinci",ic:"🍚",t:"Abinci",e:"Food and drink",w:[
-["ruwa","water"],["shinkafa","rice"],["nama","meat"],["burodi","bread"],["madara","milk"],["kifi","fish"],["wake","beans"],["gishiri","salt"]]},
-{id:"iyali",ic:"👪",t:"Iyali",e:"Family and people",w:[
-["uwa","mother"],["uba","father"],["ɗa","son"],["'ya","daughter"],["aboki","friend"],["yaro","boy"],["yarinya","girl"],["malami","teacher"]]},
-{id:"kasuwa",ic:"🛍️",t:"Kasuwa",e:"At the market",w:[
-["kasuwa","market"],["kuɗi","money"],["Nawa ne?","How much is it?"],["mai tsada","expensive"],["mai arha","cheap"],["Ina son wannan","I want this"]]}
-];
-const ALL=LESSONS.flatMap(l=>l.w);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-/* ---------- Progress (saved in this browser; swap for Firebase later) ---------- */
-const store={get(){try{return JSON.parse(localStorage.getItem("sannu")||"{}")}catch(e){return{}}},set(v){try{localStorage.setItem("sannu",JSON.stringify(v))}catch(e){}}};
-let S=Object.assign({xp:0,best:{},streak:0,last:""},store.get());
-const day=d=>new Date(d).toISOString().slice(0,10);
-function finish(id,score,total){
-  S.xp+=score*10;S.best[id]=Math.max(S.best[id]||0,score);
-  const t=day(Date.now());
-  if(S.last!==t){S.streak=S.last===day(Date.now()-864e5)?S.streak+1:1;S.last=t}
-  store.set(S);
-}
+  <title>Sannu AI — Koyi Harshen Hausa</title>
+  <meta name="description" content="Koyi harshen Hausa tare da Sannu AI. Koyi kalmomi, jimloli, nahawu da fassara cikin sauƙi.">
 
-/* ---------- Helpers ---------- */
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const view=h=>{$("#app").innerHTML=h;window.scrollTo(0,0)};
-
-/* ---------- Screens ---------- */
-function home(){
-  view(`<h1>Sannu</h1><p class="sub">Learn Hausa, one small lesson a day.</p>
-  <div class="stats"><div class="stat"><b>${S.streak}</b><span>day streak</span></div><div class="stat"><b>${S.xp}</b><span>points</span></div></div>
-  <button class="lesson" id="chat"><span class="ic">💬</span><span><b>Magana</b><small>Chat with your AI tutor</small></span></button>
-  ${LESSONS.map((l,i)=>`<button class="lesson" data-i="${i}"><span class="ic">${l.ic}</span>
-  <span><b>${l.t}</b><small>${l.e} · ${l.w.length} words</small></span>${S.best[l.id]?`<span class="done">${S.best[l.id]}/${l.w.length}</span>`:""}</button>`).join("")}
-  <p class="note">Hausa words here should be checked by a native speaker before you launch.</p>`);
-  document.querySelectorAll(".lesson[data-i]").forEach(b=>b.onclick=()=>learn(+b.dataset.i));
-  $("#chat").onclick=()=>chat();
-}
-
-function learn(i,c=0,flip=false){
-  const l=LESSONS[i],w=l.w[c];
-  view(`<div class="top"><button class="back" id="b">‹ Lessons</button><span class="sub">${c+1} / ${l.w.length}</span></div>
-  <div class="bar"><i style="width:${(c+1)/l.w.length*100}%"></i></div>
-  <h2 style="margin-bottom:14px">${l.t}</h2>
-  <div class="flash" id="f" role="button" tabindex="0" aria-label="Flip card">
-    <div>${flip?`<div class="e">${esc(w[1])}</div>`:`<div class="w">${esc(w[0])}</div>`}</div>
-    <div class="hint">${flip?"Tap to see Hausa":"Tap to see English"}</div></div>
-  <div class="row"><button class="btn alt" id="p" ${c?"":"disabled"}>Back</button>
-  ${c<l.w.length-1?`<button class="btn" id="n">Next word</button>`:`<button class="btn" id="q">Start quiz</button>`}</div>`);
-  $("#b").onclick=home;
-  const f=$("#f");f.onclick=()=>learn(i,c,!flip);f.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();learn(i,c,!flip)}};
-  if($("#p"))$("#p").onclick=()=>learn(i,c-1);
-  if($("#n"))$("#n").onclick=()=>learn(i,c+1);
-  if($("#q"))$("#q").onclick=()=>quiz(i);
-}
-
-function quiz(i){
-  const l=LESSONS[i],qs=shuffle(l.w).map((w,k)=>{
-    const toEn=k%2===0, ans=toEn?w[1]:w[0];
-    const pool=ALL.map(x=>toEn?x[1]:x[0]).filter(x=>x!==ans);
-    return{q:toEn?w[0]:w[1],ans,opts:shuffle([ans,...shuffle([...new Set(pool)]).slice(0,3)]),toEn};
-  });
-  let n=0,score=0;
-  const step=()=>{
-    if(n>=qs.length){finish(l.id,score,qs.length);return end(i,score,qs.length)}
-    const q=qs[n];
-    view(`<div class="top"><button class="back" id="b">‹ Lessons</button><span class="sub">${n+1} / ${qs.length}</span></div>
-    <div class="bar"><i style="width:${n/qs.length*100}%"></i></div>
-    <p class="sub center">${q.toEn?"What does this mean?":"How do you say this in Hausa?"}</p>
-    <div class="q">${esc(q.q)}</div>
-    ${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("")}`);
-    $("#b").onclick=home;
-    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
-      const right=b.dataset.o===q.ans;if(right)score++;
-      document.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(x.dataset.o===q.ans)x.classList.add("ok")});
-      if(!right)b.classList.add("no");
-      setTimeout(()=>{n++;step()},right?600:1400);
-    });
-  };
-  step();
-}
-
-function end(i,score,total){
-  const l=LESSONS[i],good=score>=total*.7;
-  view(`<div class="big">${good?"🎉":"💪"}</div><h2 class="center">${score} / ${total}</h2>
-  <p class="sub center">${good?"Madalla! Great work.":"Keep going. Review the words and try again."}</p>
-  <div class="stats"><div class="stat"><b>${S.streak}</b><span>day streak</span></div><div class="stat"><b>${S.xp}</b><span>points</span></div></div>
-  <div class="row"><button class="btn alt" id="r">Review words</button><button class="btn" id="a">Try again</button></div>
-  <div class="row"><button class="btn alt" id="h">All lessons</button></div>`);
-  $("#r").onclick=()=>learn(i);$("#a").onclick=()=>quiz(i);$("#h").onclick=home;
-}
-
-<!-- SANNU AI CHAT -->
-<section id="sannu-ai" style="max-width:700px;margin:25px auto;padding:20px;font-family:Arial,sans-serif;background:#f5fff8;border-radius:16px;border:1px solid #cce8d5;">
-
-  <div style="text-align:center;">
-    <h2 style="color:#087443;margin-bottom:5px;">🌿 Sannu AI</h2>
-    <p style="color:#555;">Koyi harshen Hausa cikin sauƙi!</p>
-  </div>
-
-  <div id="chatMessages" style="height:350px;overflow-y:auto;background:white;border:1px solid #ddd;border-radius:12px;padding:12px;margin-bottom:12px;">
-    <div style="background:#e5f7eb;padding:12px;border-radius:10px;margin-bottom:10px;">
-      <b>Sannu AI:</b>
-      <p style="margin-bottom:0;">Sannu! Barka da zuwa. 😊 Ina nan domin taimaka maka koyon Hausa. Me kake son koya yau?</p>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:8px;">
-    <input
-      id="chatInput"
-      type="text"
-      placeholder="Rubuta tambayarka..."
-      style="flex:1;min-width:0;padding:13px;border:1px solid #bbb;border-radius:10px;font-size:16px;"
-    >
-
-    <button
-      id="sendButton"
-      onclick="sendSannuMessage()"
-      style="padding:12px 16px;background:#087443;color:white;border:none;border-radius:10px;font-weight:bold;">
-      Aika
-    </button>
-  </div>
-
-  <p style="font-size:12px;color:#777;text-align:center;">
-    Sannu AI • Koyon Hausa ga kowa
-  </p>
-</section>
-
-<script>
-const SANNU_AI_URL =
-  "https://odd-king-5bcf.lawanahmadt03.workers.dev";
-
-async function sendSannuMessage() {
-  const input = document.getElementById("chatInput");
-  const button = document.getElementById("sendButton");
-  const messages = document.getElementById("chatMessages");
-
-  const message = input.value.trim();
-
-  if (!message) return;
-
-  addSannuMessage("Kai", message);
-
-  input.value = "";
-  button.disabled = true;
-  button.textContent = "Ana tunani...";
-
-  const loading = document.createElement("div");
-  loading.style.cssText =
-    "padding:12px;margin:8px 0;background:#f0f0f0;border-radius:10px;";
-  loading.textContent = "Sannu AI yana tunani...";
-  loading.id = "sannuLoading";
-  messages.appendChild(loading);
-  messages.scrollTop = messages.scrollHeight;
-
-  try {
-    const response = await fetch(SANNU_AI_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: message
-      })
-    });
-
-    const data = await response.json();
-
-    document.getElementById("sannuLoading")?.remove();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || "An samu matsala.");
+  <style>
+    :root {
+      --green: #087443;
+      --dark-green: #075b36;
+      --light-green: #e9f8ef;
+      --gold: #e8b84b;
+      --white: #ffffff;
+      --background: #f5f8f6;
+      --text: #172b21;
+      --muted: #6b7b72;
+      --border: #e1e9e3;
+      --shadow: 0 12px 35px rgba(15, 55, 32, .08);
     }
 
-    addSannuMessage("Sannu AI", data.reply);
+    * {
+      box-sizing: border-box;
+    }
 
-  } catch (error) {
-    document.getElementById("sannuLoading")?.remove();
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
 
-    addSannuMessage(
-      "Sannu AI",
-      "Yi haƙuri, an samu matsala wajen haɗawa. Ka sake gwadawa. Idan matsalar ta ci gaba, sai a duba saitin Cloudflare Worker."
-    );
+    button, input, select {
+      font: inherit;
+    }
 
-    console.error("Sannu AI error:", error);
+    button {
+      cursor: pointer;
+    }
 
-  } finally {
-    button.disabled = false;
-    button.textContent = "Aika";
-    input.focus();
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .brand-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      background: var(--light-green);
+      border-radius: 14px;
+      font-size: 25px;
+    }
+
+    .nav-badge {
+      color: var(--green);
+      background: var(--light-green);
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at 90% 10%, #d5f0df 0, transparent 35%),
+        linear-gradient(135deg, #ffffff, #edf8f0);
+      padding: 65px 20px 50px;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      color: var(--green);
+      background: #e3f5e9;
+      padding: 7px 15px;
+      border-radius: 25px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      max-width: 850px;
+      margin: 22px auto 18px;
+    }
+
+    h1 span {
+      color: var(--green);
+    }
+
+    .hero-description {
+      max-width: 650px;
+      margin: auto;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button-primary,
+    .button-secondary {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-weight: bold;
+      transition: .2s;
+    }
+
+    .button-primary {
+      background: var(--green);
+      color: white;
+    }
+
+    .button-primary:hover {
+      background: var(--dark-green);
+    }
+
+    .button-secondary {
+      background: white;
+      color: var(--green);
+      border: 1px solid var(--border);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 35px 20px;
+    }
+
+    .section-heading {
+      margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+      font-size: 27px;
+      margin: 0 0 5px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .learning-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .lesson-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 20px;
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(20, 60, 35, .025);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .lesson-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .lesson-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--light-green);
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .lesson-card h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+    }
+
+    .lesson-card p {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .chat-section {
+      padding-top: 25px;
+      padding-bottom: 55px;
+    }
+
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .sidebar,
+    .chat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 22px;
+    }
+
+    .sidebar h3 {
+      margin-top: 0;
+    }
+
+    .sidebar p {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .quick-prompt {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #f7faf8;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 11px;
+      margin-top: 10px;
+      color: var(--text);
+    }
+
+    .quick-prompt:hover {
+      background: var(--light-green);
+      border-color: #b6dfc4;
+    }
+
+    .chat-card {
+      overflow: hidden;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ai-avatar {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: white;
+      font-size: 23px;
+      border-radius: 15px;
+    }
+
+    .chat-header h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .chat-header p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .online-dot {
+      color: var(--green);
+    }
+
+    .chat-messages {
+      height: 390px;
+      overflow-y: auto;
+      padding: 20px;
+      background: #fcfdfc;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 16px;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .bubble {
+      max-width: 88%;
+      padding: 13px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .message.ai .bubble {
+      background: #edf6ef;
+      border: 1px solid #e0efe4;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.user .bubble {
+      color: white;
+      background: var(--green);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-label {
+      display: block;
+      font-weight: bold;
+      font-size: 11px;
+      margin-bottom: 5px;
+      opacity: .8;
+    }
+
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      min-width: 0;
+      padding: 13px 15px;
+      border: 1px solid #d9e4dc;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(8, 116, 67, .09);
+    }
+
+    .send-button {
+      min-width: 90px;
+    }
+
+    .chat-note {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .typing {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 0;
+    }
+
+    .features {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 45px 20px;
+    }
+
+    .features-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+    }
+
+    .feature h3 {
+      margin-bottom: 5px;
+    }
+
+    .feature p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 0;
+    }
+
+    footer {
+      padding: 25px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: calc(100% - 30px);
+      padding: 12px 16px;
+      background: #173d2a;
+      color: white;
+      border-radius: 12px;
+      font-size: 13px;
+      display: none;
+      z-index: 50;
+    }
+
+    @media (max-width: 850px) {
+      .learning-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .chat-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: 2;
+      }
+
+      .features-inner {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav {
+        padding: 11px 14px;
+      }
+
+      .brand {
+        font-size: 19px;
+      }
+
+      .nav-badge {
+        font-size: 10px;
+        padding: 6px 8px;
+      }
+
+      .hero {
+        padding: 45px 17px 35px;
+      }
+
+      .container {
+        padding: 28px 14px;
+      }
+
+      .learning-grid {
+        gap: 10px;
+      }
+
+      .lesson-card {
+        padding: 15px;
+      }
+
+      .chat-messages {
+        height: 360px;
+        padding: 14px;
+      }
+
+      .chat-form {
+        gap: 7px;
+      }
+
+      .send-button {
+        min-width: 68px;
+        padding: 12px;
+      }
+
+      .bubble {
+        max-width: 94%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <nav class="nav">
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <span>Sannu AI</span>
+    </div>
+    <div class="nav-badge">MATAIMAKIN KOYON HAUSA</div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow">🇳🇬 Koyi Hausa cikin sauƙi</span>
+
+      <h1>
+        Ka fara magana da Hausa,
+        <span>mataki-mataki.</span>
+      </h1>
+
+      <p class="hero-description">
+        Sannu AI zai taimaka maka ka koyi kalmomin Hausa,
+        jimloli, nahawu da fassara ta hanyar tattaunawa.
+        Ko kai sabon mai koyo ne, za mu fara daga inda kake.
+      </p>
+
+      <div class="hero-actions">
+        <button class="button-primary" onclick="startLearning()">
+          Fara Koyon Hausa →
+        </button>
+
+        <button class="button-secondary" onclick="showLessons()">
+          Duba Darussa
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" id="lessons">
+    <div class="section-heading">
+      <h2>Me kake son koya?</h2>
+      <p>Zaɓi darasin da kake son farawa da shi.</p>
+    </div>
+
+    <div class="learning-grid">
+
+      <button class="lesson-card" onclick="askLesson('Koyar da ni gaisuwar Hausa daga farko tare da misalai.')">
+        <div class="lesson-icon">👋</div>
+        <h3>Gaisuwa</h3>
+        <p>Ka koyi yadda ake gaisawa da amsa gaisuwa.</p>
+      </button>
+
+      <button class="lesson-card" onclick="askLesson('Koyar da ni kalmomin Hausa na yau da kullum tare da fassararsu zuwa Turanci.')">
+        <div class="lesson-icon">📚</div>
+        <h3>Kalmomi</h3>
+        <p>Koyi kalmomin da ake amfani da su kullum.</p>
+      </button>
+
+      <button class="lesson-card" onclick="askLesson('Koyar da ni yadda ake gina jimlolin Hausa daga matakin farko.')">
+        <div class="lesson-icon">✍️</div>
+        <h3>Gina Jimloli</h3>
+        <p>Ka koyi haɗa kalmomi su zama jimloli.</p>
+      </button>
+
+      <button class="lesson-card" onclick="askLesson('Ba ni darasin nahawun Hausa na farko tare da misalai masu sauƙi.')">
+        <div class="lesson-icon">🧠</div>
+        <h3>Nahawu</h3>
+        <p>Fahimci yadda ake amfani da kalmomi da jimloli.</p>
+      </button>
+
+    </div>
+  </section>
+
+  <section class="container chat-section" id="chat">
+    <div class="section-heading">
+      <h2>Yi magana da Sannu AI</h2>
+      <p>Rubuta tambayarka. AI zai taimaka maka ka koyi Hausa.</p>
+    </div>
+
+    <div class="chat-layout">
+
+      <aside class="sidebar">
+        <h3>💡 Gwada waɗannan</h3>
+        <p>Danna kowace tambaya domin fara darasi.</p>
+
+        <button class="quick-prompt" onclick="askLesson('Menene ma’anar Sannu a Turanci?')">
+          Menene ma’anar “Sannu”?
+        </button>
+
+        <button class="quick-prompt" onclick="askLesson('Koyar da ni yadda zan gabatar da kaina da Hausa.')">
+          Yadda zan gabatar da kaina
+        </button>
+
+        <button class="quick-prompt" onclick="askLesson('Koyar da ni jimlolin Hausa guda biyar da fassararsu zuwa Turanci.')">
+          Jimloli guda biyar
+        </button>
+
+        <button class="quick-prompt" onclick="askLesson('Ka gwada ni da tambayoyi biyar na koyon Hausa, ɗaya bayan ɗaya.')">
+          Gwajin Hausa
+        </button>
+
+        <button class="quick-prompt" onclick="askLesson('Ka fassara min wasu jimlolin Turanci zuwa Hausa, sannan ka bayyana yadda aka gina su.')">
+          Fassara Turanci zuwa Hausa
+        </button>
+
+        <hr style="border:0;border-top:1px solid var(--border);margin:22px 0;">
+
+        <h3>🌱 Yadda ake koyo</h3>
+        <p>1. Ka yi tambaya.</p>
+        <p>2. Ka karanta amsar AI.</p>
+        <p>3. Ka gwada rubuta naka misalin.</p>
+        <p>4. Ka nemi a gyara kuskuranka.</p>
+      </aside>
+
+      <section class="chat-card" aria-label="Sannu AI Chat">
+
+        <div class="chat-header">
+          <div class="ai-avatar">🌿</div>
+
+          <div>
+            <h3>Sannu AI</h3>
+            <p><span class="online-dot">●</span> Mataimakin koyon Hausa</p>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages" aria-live="polite">
+          <div class="message ai">
+            <div class="bubble">
+              <span class="message-label">Sannu AI</span>
+              Sannu! Barka da zuwa. 👋
+
+              Ni ne Sannu AI, mataimakinka wajen koyon harshen Hausa.
+
+              Zan taimaka maka da kalmomi, gaisuwa, jimloli, nahawu da fassara.
+
+              <br><br>
+              Mu fara! Ka rubuta: “Ina son koyon Hausa daga farko.”
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <form class="chat-form" id="chatForm">
+            <input
+              class="chat-input"
+              id="chatInput"
+              type="text"
+              maxlength="2000"
+              placeholder="Rubuta tambayarka a nan..."
+              autocomplete="off"
+              aria-label="Rubuta saƙonka"
+              required
+            >
+
+            <button class="button-primary send-button" id="sendButton" type="submit">
+              Aika ↑
+            </button>
+          </form>
+
+          <p class="chat-note">
+            Sannu AI na iya yin kuskure. Ka sake tambaya idan kana buƙatar ƙarin bayani.
+          </p>
+        </div>
+
+      </section>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-inner">
+
+      <div class="feature">
+        <h3>🌍 Koyo cikin sauƙi</h3>
+        <p>Ka iya fara daga matakin farko, ko da ba ka taɓa koyon Hausa ba.</p>
+      </div>
+
+      <div class="feature">
+        <h3>💬 Tattaunawa</h3>
+        <p>Ka yi tambayoyi, ka karanta misalai, sannan ka gwada abin da ka koya.</p>
+      </div>
+
+      <div class="feature">
+        <h3>📖 Koyo a lokacinka</h3>
+        <p>Ka zaɓi kalmomi, jimloli ko nahawu gwargwadon abin da kake son koya.</p>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Sannu AI</strong> — Koyon harshen Hausa ga kowa.
+  <br>
+  © <span id="year"></span> Sannu AI
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  /*
+    Wannan URL shi ne Cloudflare Worker ɗin Sannu AI.
+    API key yana nan a Cloudflare Secret, ba a cikin HTML ba.
+  */
+
+  const SANNU_AI_URL =
+    "https://odd-king-5bcf.lawanahmadt03.workers.dev";
+
+  const chatForm = document.getElementById("chatForm");
+  const chatInput = document.getElementById("chatInput");
+  const chatMessages = document.getElementById("chatMessages");
+  const sendButton = document.getElementById("sendButton");
+
+  let isSending = false;
+  let conversation = [];
+
+  document.getElementById("year").textContent =
+    new Date().getFullYear();
+
+  function scrollChat() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   }
-}
 
-function addSannuMessage(sender, text) {
-  const messages = document.getElementById("chatMessages");
-  const box = document.createElement("div");
+  function addMessage(role, text) {
+    const message = document.createElement("div");
+    message.className = "message " + (role === "user" ? "user" : "ai");
 
-  box.style.cssText =
-    "padding:12px;margin:8px 0;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
 
-  box.style.background =
-    sender === "Kai" ? "#e5f7eb" : "#f0f0f0";
+    const label = document.createElement("span");
+    label.className = "message-label";
+    label.textContent = role === "user" ? "Kai" : "Sannu AI";
 
-  const title = document.createElement("b");
-  title.textContent = sender + ":";
+    const content = document.createElement("div");
+    content.textContent = text;
 
-  const content = document.createElement("p");
-  content.style.marginBottom = "0";
-  content.textContent = text;
+    bubble.appendChild(label);
+    bubble.appendChild(content);
+    message.appendChild(bubble);
+    chatMessages.appendChild(message);
 
-  box.appendChild(title);
-  box.appendChild(content);
-  messages.appendChild(box);
+    scrollChat();
+    return message;
+  }
 
-  messages.scrollTop = messages.scrollHeight;
-}
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.display = "block";
 
-document.getElementById("chatInput").addEventListener("keydown", function(event) {
-  if (event.key === "Enter") {
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => {
+      toast.style.display = "none";
+    }, 3500);
+  }
+
+  async function sendMessage(message) {
+    if (!message || isSending) return;
+
+    isSending = true;
+    sendButton.disabled = true;
+    chatInput.disabled = true;
+    sendButton.textContent = "...";
+
+    addMessage("user", message);
+
+    const typing = document.createElement("div");
+    typing.className = "typing";
+    typing.textContent = "Sannu AI yana shirya amsa...";
+    chatMessages.appendChild(typing);
+    scrollChat();
+
+    try {
+      const response = await fetch(SANNU_AI_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: message
+        })
+      });
+
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Server bai dawo da amsa mai inganci ba.");
+      }
+
+      if (!response.ok || !data.success) {
+        console.error("Sannu AI response error:", data);
+        throw new Error(
+          data.error || "Ba a samu amsa daga AI ba."
+        );
+      }
+
+      if (!data.reply) {
+        throw new Error("Amsar AI ba ta cika ba.");
+      }
+
+      addMessage("ai", data.reply);
+
+      conversation.push(
+        { role: "user", content: message },
+        { role: "assistant", content: data.reply }
+      );
+
+      // Ajiye tattaunawar a memory na wannan shafin kawai.
+      // Ba a adana ta a database ba.
+      if (conversation.length > 20) {
+        conversation = conversation.slice(-20);
+      }
+
+    } catch (error) {
+      console.error("Sannu AI error:", error);
+
+      addMessage(
+        "ai",
+        "Yi haƙuri, ban iya haɗuwa da AI ba a yanzu. " +
+        "Duba haɗin intanet ɗinka ka sake gwadawa. " +
+        "Idan matsalar ta ci gaba, sai a duba Cloudflare Worker da API."
+      );
+
+      showToast("An samu matsalar haɗi da AI.");
+    } finally {
+      typing.remove();
+      isSending = false;
+      sendButton.disabled = false;
+      chatInput.disabled = false;
+      sendButton.textContent = "Aika ↑";
+      chatInput.focus();
+    }
+  }
+
+  chatForm.addEventListener("submit", function(event) {
     event.preventDefault();
-    sendSannuMessage();
+
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    chatInput.value = "";
+    sendMessage(message);
+  });
+
+  function askLesson(prompt) {
+    document.getElementById("chat").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    chatInput.value = prompt;
+    chatInput.focus();
+
+    // Aika tambayar kai tsaye domin sauƙaƙa amfani.
+    sendMessage(prompt);
   }
-});
+
+  function startLearning() {
+    askLesson(
+      "Ina son koyon harshen Hausa daga farko. " +
+      "Fara da darasi na farko, ka yi bayani mai sauƙi " +
+      "tare da misalai da atisaye."
+    );
+  }
+
+  function showLessons() {
+    document.getElementById("lessons").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 </script>
 
-</script>
 </body>
 </html>
