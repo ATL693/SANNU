@@ -165,43 +165,138 @@ function end(i,score,total){
   $("#r").onclick=()=>learn(i);$("#a").onclick=()=>quiz(i);$("#h").onclick=home;
 }
 
-/* ---------- AI chat (talks to your Cloudflare Worker) ---------- */
-const WORKER_URL="https://odd-king-5bcf.lawanahmadt03.workers.dev"; // <- put your Worker URL here
-const FREE_PER_DAY=10;
-let H=[];
-const usedToday=()=>S.chatDay===day(Date.now())?(S.chatN||0):0;
-const bub=m=>`<div class="bub ${m.role}">${esc(m.content).replace(/\n/g,"<br>")}</div>`;
+<!-- SANNU AI CHAT -->
+<section id="sannu-ai" style="max-width:700px;margin:25px auto;padding:20px;font-family:Arial,sans-serif;background:#f5fff8;border-radius:16px;border:1px solid #cce8d5;">
 
-function chat(){
-  view(`<div class="top"><button class="back" id="b">\u2039 Lessons</button><span class="sub" id="left"></span></div>
-  <h2>Magana</h2><p class="sub">Write in Hausa or English. Your tutor replies in Hausa and corrects you.</p>
-  <div id="log"></div>
-  <div class="send"><input id="t" placeholder="Rubuta nan... (type here)" maxlength="300" autocomplete="off"><button class="btn" id="s">Send</button></div>`);
-  $("#b").onclick=home;
-  const log=$("#log"),input=$("#t"),left=()=>{$("#left").textContent=Math.max(0,FREE_PER_DAY-usedToday())+" free messages left today"};
-  const paint=extra=>{log.innerHTML=(H.length?H.map(bub).join(""):`<div class="bub assistant">Sannu! Ina so in taimaka maka. Say hello in Hausa, or ask how to say something.</div>`)+(extra||"");window.scrollTo(0,document.body.scrollHeight)};
-  left();paint();
-  async function send(){
-    const text=input.value.trim();if(!text)return;
-    if(usedToday()>=FREE_PER_DAY){paint(`<div class="bub assistant">You have used today's free messages. Come back tomorrow.</div>`);return}
-    input.value="";H.push({role:"user",content:text});paint(`<div class="bub assistant wait">...</div>`);
-    $("#s").disabled=true;
-    try{
-      const r=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:H})});
-      if(!r.ok)throw new Error(r.status);
-      const d=await r.json();
-      H.push({role:"assistant",content:d.reply||"..."});
-      S.chatDay=day(Date.now());S.chatN=usedToday()+1;store.set(S);
-      paint();
-    }catch(e){
-      H.pop();paint(`<div class="bub assistant">Could not reach the tutor. Check your connection and try again.</div>`);
-      input.value=text;
+  <div style="text-align:center;">
+    <h2 style="color:#087443;margin-bottom:5px;">🌿 Sannu AI</h2>
+    <p style="color:#555;">Koyi harshen Hausa cikin sauƙi!</p>
+  </div>
+
+  <div id="chatMessages" style="height:350px;overflow-y:auto;background:white;border:1px solid #ddd;border-radius:12px;padding:12px;margin-bottom:12px;">
+    <div style="background:#e5f7eb;padding:12px;border-radius:10px;margin-bottom:10px;">
+      <b>Sannu AI:</b>
+      <p style="margin-bottom:0;">Sannu! Barka da zuwa. 😊 Ina nan domin taimaka maka koyon Hausa. Me kake son koya yau?</p>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;">
+    <input
+      id="chatInput"
+      type="text"
+      placeholder="Rubuta tambayarka..."
+      style="flex:1;min-width:0;padding:13px;border:1px solid #bbb;border-radius:10px;font-size:16px;"
+    >
+
+    <button
+      id="sendButton"
+      onclick="sendSannuMessage()"
+      style="padding:12px 16px;background:#087443;color:white;border:none;border-radius:10px;font-weight:bold;">
+      Aika
+    </button>
+  </div>
+
+  <p style="font-size:12px;color:#777;text-align:center;">
+    Sannu AI • Koyon Hausa ga kowa
+  </p>
+</section>
+
+<script>
+const SANNU_AI_URL =
+  "https://odd-king-5bcf.lawanahmadt03.workers.dev";
+
+async function sendSannuMessage() {
+  const input = document.getElementById("chatInput");
+  const button = document.getElementById("sendButton");
+  const messages = document.getElementById("chatMessages");
+
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  addSannuMessage("Kai", message);
+
+  input.value = "";
+  button.disabled = true;
+  button.textContent = "Ana tunani...";
+
+  const loading = document.createElement("div");
+  loading.style.cssText =
+    "padding:12px;margin:8px 0;background:#f0f0f0;border-radius:10px;";
+  loading.textContent = "Sannu AI yana tunani...";
+  loading.id = "sannuLoading";
+  messages.appendChild(loading);
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    const response = await fetch(SANNU_AI_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: message
+      })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("sannuLoading")?.remove();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "An samu matsala.");
     }
-    $("#s").disabled=false;left();input.focus();
+
+    addSannuMessage("Sannu AI", data.reply);
+
+  } catch (error) {
+    document.getElementById("sannuLoading")?.remove();
+
+    addSannuMessage(
+      "Sannu AI",
+      "Yi haƙuri, an samu matsala wajen haɗawa. Ka sake gwadawa. Idan matsalar ta ci gaba, sai a duba saitin Cloudflare Worker."
+    );
+
+    console.error("Sannu AI error:", error);
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Aika";
+    input.focus();
   }
-  $("#s").onclick=send;
-  input.onkeydown=e=>{if(e.key==="Enter")send()};
 }
+
+function addSannuMessage(sender, text) {
+  const messages = document.getElementById("chatMessages");
+  const box = document.createElement("div");
+
+  box.style.cssText =
+    "padding:12px;margin:8px 0;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;";
+
+  box.style.background =
+    sender === "Kai" ? "#e5f7eb" : "#f0f0f0";
+
+  const title = document.createElement("b");
+  title.textContent = sender + ":";
+
+  const content = document.createElement("p");
+  content.style.marginBottom = "0";
+  content.textContent = text;
+
+  box.appendChild(title);
+  box.appendChild(content);
+  messages.appendChild(box);
+
+  messages.scrollTop = messages.scrollHeight;
+}
+
+document.getElementById("chatInput").addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendSannuMessage();
+  }
+});
+</script>
 
 home();
 </script>
