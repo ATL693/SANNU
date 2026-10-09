@@ -1,901 +1,126 @@
 <!DOCTYPE html>
 <html lang="ha">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Sannu AI — Koyi Harshen Hausa</title>
-  <meta name="description" content="Koyi harshen Hausa tare da Sannu AI. Koyi kalmomi, jimloli, nahawu da fassara cikin sauƙi.">
-
-  <style>
-    :root {
-      --green: #087443;
-      --dark-green: #075b36;
-      --light-green: #e9f8ef;
-      --gold: #e8b84b;
-      --white: #ffffff;
-      --background: #f5f8f6;
-      --text: #172b21;
-      --muted: #6b7b72;
-      --border: #e1e9e3;
-      --shadow: 0 12px 35px rgba(15, 55, 32, .08);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--background);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    button, input, select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .topbar {
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .nav {
-      max-width: 1200px;
-      margin: auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--green);
-    }
-
-    .brand-icon {
-      width: 43px;
-      height: 43px;
-      display: grid;
-      place-items: center;
-      background: var(--light-green);
-      border-radius: 14px;
-      font-size: 25px;
-    }
-
-    .nav-badge {
-      color: var(--green);
-      background: var(--light-green);
-      padding: 7px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .hero {
-      background:
-        radial-gradient(circle at 90% 10%, #d5f0df 0, transparent 35%),
-        linear-gradient(135deg, #ffffff, #edf8f0);
-      padding: 65px 20px 50px;
-    }
-
-    .hero-inner {
-      max-width: 1100px;
-      margin: auto;
-      text-align: center;
-    }
-
-    .eyebrow {
-      display: inline-block;
-      color: var(--green);
-      background: #e3f5e9;
-      padding: 7px 15px;
-      border-radius: 25px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    h1 {
-      font-size: clamp(34px, 6vw, 58px);
-      line-height: 1.12;
-      letter-spacing: -1.5px;
-      max-width: 850px;
-      margin: 22px auto 18px;
-    }
-
-    h1 span {
-      color: var(--green);
-    }
-
-    .hero-description {
-      max-width: 650px;
-      margin: auto;
-      color: var(--muted);
-      font-size: 17px;
-    }
-
-    .hero-actions {
-      margin-top: 28px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .button-primary,
-    .button-secondary {
-      border: none;
-      border-radius: 12px;
-      padding: 13px 20px;
-      font-weight: bold;
-      transition: .2s;
-    }
-
-    .button-primary {
-      background: var(--green);
-      color: white;
-    }
-
-    .button-primary:hover {
-      background: var(--dark-green);
-    }
-
-    .button-secondary {
-      background: white;
-      color: var(--green);
-      border: 1px solid var(--border);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 35px 20px;
-    }
-
-    .section-heading {
-      margin-bottom: 20px;
-    }
-
-    .section-heading h2 {
-      font-size: 27px;
-      margin: 0 0 5px;
-    }
-
-    .section-heading p {
-      color: var(--muted);
-      margin: 0;
-    }
-
-    .learning-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-    }
-
-    .lesson-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 20px;
-      text-align: left;
-      box-shadow: 0 4px 15px rgba(20, 60, 35, .025);
-      transition: transform .2s, box-shadow .2s;
-    }
-
-    .lesson-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow);
-    }
-
-    .lesson-icon {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 14px;
-      background: var(--light-green);
-      font-size: 25px;
-      margin-bottom: 12px;
-    }
-
-    .lesson-card h3 {
-      margin: 0 0 6px;
-      font-size: 17px;
-    }
-
-    .lesson-card p {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0;
-    }
-
-    .chat-section {
-      padding-top: 25px;
-      padding-bottom: 55px;
-    }
-
-    .chat-layout {
-      display: grid;
-      grid-template-columns: 290px minmax(0, 1fr);
-      gap: 22px;
-      align-items: start;
-    }
-
-    .sidebar,
-    .chat-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .sidebar {
-      padding: 22px;
-    }
-
-    .sidebar h3 {
-      margin-top: 0;
-    }
-
-    .sidebar p {
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    .quick-prompt {
-      display: block;
-      width: 100%;
-      text-align: left;
-      background: #f7faf8;
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 11px;
-      margin-top: 10px;
-      color: var(--text);
-    }
-
-    .quick-prompt:hover {
-      background: var(--light-green);
-      border-color: #b6dfc4;
-    }
-
-    .chat-card {
-      overflow: hidden;
-    }
-
-    .chat-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .ai-avatar {
-      width: 46px;
-      height: 46px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      background: var(--green);
-      color: white;
-      font-size: 23px;
-      border-radius: 15px;
-    }
-
-    .chat-header h3 {
-      margin: 0;
-      font-size: 17px;
-    }
-
-    .chat-header p {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .online-dot {
-      color: var(--green);
-    }
-
-    .chat-messages {
-      height: 390px;
-      overflow-y: auto;
-      padding: 20px;
-      background: #fcfdfc;
-      scroll-behavior: smooth;
-    }
-
-    .message {
-      display: flex;
-      margin-bottom: 16px;
-    }
-
-    .message.user {
-      justify-content: flex-end;
-    }
-
-    .bubble {
-      max-width: 88%;
-      padding: 13px 15px;
-      border-radius: 15px;
-      font-size: 14px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .message.ai .bubble {
-      background: #edf6ef;
-      border: 1px solid #e0efe4;
-      border-bottom-left-radius: 4px;
-    }
-
-    .message.user .bubble {
-      color: white;
-      background: var(--green);
-      border-bottom-right-radius: 4px;
-    }
-
-    .message-label {
-      display: block;
-      font-weight: bold;
-      font-size: 11px;
-      margin-bottom: 5px;
-      opacity: .8;
-    }
-
-    .chat-input-area {
-      padding: 15px;
-      border-top: 1px solid var(--border);
-      background: white;
-    }
-
-    .chat-form {
-      display: flex;
-      gap: 10px;
-    }
-
-    .chat-input {
-      flex: 1;
-      min-width: 0;
-      padding: 13px 15px;
-      border: 1px solid #d9e4dc;
-      border-radius: 12px;
-      outline: none;
-    }
-
-    .chat-input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(8, 116, 67, .09);
-    }
-
-    .send-button {
-      min-width: 90px;
-    }
-
-    .chat-note {
-      margin: 9px 0 0;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
-    }
-
-    .typing {
-      font-size: 13px;
-      color: var(--muted);
-      padding: 8px 0;
-    }
-
-    .features {
-      background: white;
-      border-top: 1px solid var(--border);
-      padding: 45px 20px;
-    }
-
-    .features-inner {
-      max-width: 1100px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 25px;
-    }
-
-    .feature h3 {
-      margin-bottom: 5px;
-    }
-
-    .feature p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 0;
-    }
-
-    footer {
-      padding: 25px 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: calc(100% - 30px);
-      padding: 12px 16px;
-      background: #173d2a;
-      color: white;
-      border-radius: 12px;
-      font-size: 13px;
-      display: none;
-      z-index: 50;
-    }
-
-    @media (max-width: 850px) {
-      .learning-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .chat-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        order: 2;
-      }
-
-      .features-inner {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .nav {
-        padding: 11px 14px;
-      }
-
-      .brand {
-        font-size: 19px;
-      }
-
-      .nav-badge {
-        font-size: 10px;
-        padding: 6px 8px;
-      }
-
-      .hero {
-        padding: 45px 17px 35px;
-      }
-
-      .container {
-        padding: 28px 14px;
-      }
-
-      .learning-grid {
-        gap: 10px;
-      }
-
-      .lesson-card {
-        padding: 15px;
-      }
-
-      .chat-messages {
-        height: 360px;
-        padding: 14px;
-      }
-
-      .chat-form {
-        gap: 7px;
-      }
-
-      .send-button {
-        min-width: 68px;
-        padding: 12px;
-      }
-
-      .bubble {
-        max-width: 94%;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b2559">
+<title>Sannu Ajami</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1b2559;--bg:#f3f5fb;--card:#fff;--line:#d5daee;--text:#1a1d33;--mute:#5b6285;--go:#2f7d5b;--gold:#f2b632}
+@media(prefers-color-scheme:dark){:root{--ink:#aab6f5;--bg:#0f1330;--card:#171c40;--line:#2a3166;--text:#eef0ff;--mute:#9aa2d1;--go:#5cc596}}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:0;font-size:2.3rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.sub{color:var(--mute);margin:6px 0 18px}
+label{display:block;font-weight:600;margin:14px 0 6px}
+textarea,input[type=text]{width:100%;font:inherit;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);resize:vertical}
+.keys{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.keys button,.chip{font:inherit;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600}
+.chip{font-weight:400;font-size:.85rem;padding:6px 10px}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.opt{display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--mute);font-size:.92rem}
+/* Ajami result card with embroidery-style border */
+#o{direction:rtl;text-align:right;font-family:'Noto Naskh Arabic',serif;font-size:2.2rem;line-height:2.1;min-height:150px;margin-top:6px;padding:14px 18px;border-radius:18px;
+border:8px solid transparent;background-image:linear-gradient(var(--card),var(--card)),conic-gradient(from 45deg,var(--ink) 0 25%,var(--gold) 0 50%,var(--go) 0 75%,var(--ink) 0);background-origin:border-box;background-clip:padding-box,border-box;word-wrap:break-word}
+#o:empty::before{content:"\0627\062C\0627\0645\064A";color:var(--line)}
+.btn{font:inherit;background:var(--ink);color:var(--bg);border:0;border-radius:12px;padding:13px;font-weight:600;cursor:pointer;width:100%;margin-top:10px}
+details{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+summary{cursor:pointer;font-weight:600}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+td{padding:6px;border-bottom:1px solid var(--line)}
+td.a{font-family:'Noto Naskh Arabic',serif;font-size:1.5rem;text-align:right}
+.note{font-size:.8rem;color:var(--mute);margin-top:18px;line-height:1.5}
+</style>
 </head>
-
 <body>
-
-<header class="topbar">
-  <nav class="nav">
-    <div class="brand">
-      <div class="brand-icon">🌿</div>
-      <span>Sannu AI</span>
-    </div>
-    <div class="nav-badge">MATAIMAKIN KOYON HAUSA</div>
-  </nav>
-</header>
-
 <main>
+<h1>Sannu Ajami</h1>
+<p class="sub">Rubuta Hausa (Boko), ka samu Ajami nan take. Write Hausa, get Ajami.</p>
 
-  <section class="hero">
-    <div class="hero-inner">
-      <span class="eyebrow">🇳🇬 Koyi Hausa cikin sauƙi</span>
+<label for="i">Hausa (Boko)</label>
+<textarea id="i" rows="4" placeholder="Misali: Barka da safe" autocomplete="off" spellcheck="false"></textarea>
+<div class="keys" aria-label="Special letters"><button>ɓ</button><button>ɗ</button><button>ƙ</button><button>ƴ</button><button>'</button></div>
+<label class="opt"><input type="checkbox" id="h" checked> Saka alamomin wasali (harakat) · show vowel marks</label>
+<div class="keys" id="ex"></div>
 
-      <h1>
-        Ka fara magana da Hausa,
-        <span>mataki-mataki.</span>
-      </h1>
+<label>Ajami</label>
+<div id="o" lang="ha-Arab" aria-live="polite"></div>
+<button class="btn" id="cp">Kwafa · Copy</button>
 
-      <p class="hero-description">
-        Sannu AI zai taimaka maka ka koyi kalmomin Hausa,
-        jimloli, nahawu da fassara ta hanyar tattaunawa.
-        Ko kai sabon mai koyo ne, za mu fara daga inda kake.
-      </p>
+<details><summary>Kalmomin ka · Your own words</summary>
+<p class="note" style="margin-top:8px">Idan wata kalma ba ta fito daidai ba, ka rubuta ta nan (kalma=ajami), kowacce a layi. Za a ajiye ta a wayarka.</p>
+<textarea id="cw" rows="3" placeholder="allah=الله"></textarea>
+<button class="btn" id="sv">Ajiye · Save</button></details>
 
-      <div class="hero-actions">
-        <button class="button-primary" onclick="startLearning()">
-          Fara Koyon Hausa →
-        </button>
+<details><summary>Taswirar haruffa · Letter chart</summary><table id="ch"></table></details>
 
-        <button class="button-secondary" onclick="showLessons()">
-          Duba Darussa
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <section class="container" id="lessons">
-    <div class="section-heading">
-      <h2>Me kake son koya?</h2>
-      <p>Zaɓi darasin da kake son farawa da shi.</p>
-    </div>
-
-    <div class="learning-grid">
-
-      <button class="lesson-card" onclick="askLesson('Koyar da ni gaisuwar Hausa daga farko tare da misalai.')">
-        <div class="lesson-icon">👋</div>
-        <h3>Gaisuwa</h3>
-        <p>Ka koyi yadda ake gaisawa da amsa gaisuwa.</p>
-      </button>
-
-      <button class="lesson-card" onclick="askLesson('Koyar da ni kalmomin Hausa na yau da kullum tare da fassararsu zuwa Turanci.')">
-        <div class="lesson-icon">📚</div>
-        <h3>Kalmomi</h3>
-        <p>Koyi kalmomin da ake amfani da su kullum.</p>
-      </button>
-
-      <button class="lesson-card" onclick="askLesson('Koyar da ni yadda ake gina jimlolin Hausa daga matakin farko.')">
-        <div class="lesson-icon">✍️</div>
-        <h3>Gina Jimloli</h3>
-        <p>Ka koyi haɗa kalmomi su zama jimloli.</p>
-      </button>
-
-      <button class="lesson-card" onclick="askLesson('Ba ni darasin nahawun Hausa na farko tare da misalai masu sauƙi.')">
-        <div class="lesson-icon">🧠</div>
-        <h3>Nahawu</h3>
-        <p>Fahimci yadda ake amfani da kalmomi da jimloli.</p>
-      </button>
-
-    </div>
-  </section>
-
-  <section class="container chat-section" id="chat">
-    <div class="section-heading">
-      <h2>Yi magana da Sannu AI</h2>
-      <p>Rubuta tambayarka. AI zai taimaka maka ka koyi Hausa.</p>
-    </div>
-
-    <div class="chat-layout">
-
-      <aside class="sidebar">
-        <h3>💡 Gwada waɗannan</h3>
-        <p>Danna kowace tambaya domin fara darasi.</p>
-
-        <button class="quick-prompt" onclick="askLesson('Menene ma’anar Sannu a Turanci?')">
-          Menene ma’anar “Sannu”?
-        </button>
-
-        <button class="quick-prompt" onclick="askLesson('Koyar da ni yadda zan gabatar da kaina da Hausa.')">
-          Yadda zan gabatar da kaina
-        </button>
-
-        <button class="quick-prompt" onclick="askLesson('Koyar da ni jimlolin Hausa guda biyar da fassararsu zuwa Turanci.')">
-          Jimloli guda biyar
-        </button>
-
-        <button class="quick-prompt" onclick="askLesson('Ka gwada ni da tambayoyi biyar na koyon Hausa, ɗaya bayan ɗaya.')">
-          Gwajin Hausa
-        </button>
-
-        <button class="quick-prompt" onclick="askLesson('Ka fassara min wasu jimlolin Turanci zuwa Hausa, sannan ka bayyana yadda aka gina su.')">
-          Fassara Turanci zuwa Hausa
-        </button>
-
-        <hr style="border:0;border-top:1px solid var(--border);margin:22px 0;">
-
-        <h3>🌱 Yadda ake koyo</h3>
-        <p>1. Ka yi tambaya.</p>
-        <p>2. Ka karanta amsar AI.</p>
-        <p>3. Ka gwada rubuta naka misalin.</p>
-        <p>4. Ka nemi a gyara kuskuranka.</p>
-      </aside>
-
-      <section class="chat-card" aria-label="Sannu AI Chat">
-
-        <div class="chat-header">
-          <div class="ai-avatar">🌿</div>
-
-          <div>
-            <h3>Sannu AI</h3>
-            <p><span class="online-dot">●</span> Mataimakin koyon Hausa</p>
-          </div>
-        </div>
-
-        <div class="chat-messages" id="chatMessages" aria-live="polite">
-          <div class="message ai">
-            <div class="bubble">
-              <span class="message-label">Sannu AI</span>
-              Sannu! Barka da zuwa. 👋
-
-              Ni ne Sannu AI, mataimakinka wajen koyon harshen Hausa.
-
-              Zan taimaka maka da kalmomi, gaisuwa, jimloli, nahawu da fassara.
-
-              <br><br>
-              Mu fara! Ka rubuta: “Ina son koyon Hausa daga farko.”
-            </div>
-          </div>
-        </div>
-
-        <div class="chat-input-area">
-          <form class="chat-form" id="chatForm">
-            <input
-              class="chat-input"
-              id="chatInput"
-              type="text"
-              maxlength="2000"
-              placeholder="Rubuta tambayarka a nan..."
-              autocomplete="off"
-              aria-label="Rubuta saƙonka"
-              required
-            >
-
-            <button class="button-primary send-button" id="sendButton" type="submit">
-              Aika ↑
-            </button>
-          </form>
-
-          <p class="chat-note">
-            Sannu AI na iya yin kuskure. Ka sake tambaya idan kana buƙatar ƙarin bayani.
-          </p>
-        </div>
-
-      </section>
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="features-inner">
-
-      <div class="feature">
-        <h3>🌍 Koyo cikin sauƙi</h3>
-        <p>Ka iya fara daga matakin farko, ko da ba ka taɓa koyon Hausa ba.</p>
-      </div>
-
-      <div class="feature">
-        <h3>💬 Tattaunawa</h3>
-        <p>Ka yi tambayoyi, ka karanta misalai, sannan ka gwada abin da ka koya.</p>
-      </div>
-
-      <div class="feature">
-        <h3>📖 Koyo a lokacinka</h3>
-        <p>Ka zaɓi kalmomi, jimloli ko nahawu gwargwadon abin da kake son koya.</p>
-      </div>
-
-    </div>
-  </section>
-
+<p class="note">Muhimmi: Ajami ba shi da ma'aunin rubutu ɗaya tsakanin marubuta. Haruffan ɓ, ɗ, ƙ, ƴ da wasu wasali na iya bambanta. Ka nemi malamin Ajami ya duba kafin ka yi amfani da shi a aikin gaske. · Ajami spelling is not fully standardised, so please have an Ajami reader check results.</p>
 </main>
-
-<footer>
-  <strong>Sannu AI</strong> — Koyon harshen Hausa ga kowa.
-  <br>
-  © <span id="year"></span> Sannu AI
-</footer>
-
-<div class="toast" id="toast" role="status"></div>
-
 <script>
-  /*
-    Wannan URL shi ne Cloudflare Worker ɗin Sannu AI.
-    API key yana nan a Cloudflare Secret, ba a cikin HTML ba.
-  */
+/* ===== Rules. Change a letter here and everything updates. ===== */
+const C={b:"ب","ɓ":"ٻ",t:"ت",j:"ج",c:"چ",ch:"چ",d:"د","ɗ":"ڍ",r:"ر",s:"س",sh:"ش",ts:"څ",f:"ف","ƙ":"ڨ",k:"ك",g:"گ",h:"ه",l:"ل",m:"م",n:"ن",w:"و",y:"ي","ƴ":"ئ",z:"ز",p:"پ",v:"ڤ",q:"ق",x:"خ",gw:"گو",kw:"كو",ky:"كي",gy:"گي","ƙw":"ڨو","ƙy":"ڨي","'":"ء"};
+const V={a:"ا",i:"ي",u:"و",e:"ێ",o:"ۆ"};            // vowel letters
+const M={a:"\u064E",i:"\u0650",u:"\u064F"};          // fatha, kasra, damma
+const SH="\u0651",SK="\u0652";
+/* Loanwords with fixed spellings. Add more here or in "Kalmomin ka". */
+const DICT={allah:"الله",muhammadu:"محمد",annabi:"النبي","alkur'ani":"القرآن",salla:"صلاة",zakka:"زكاة",hajji:"حج",ramadan:"رمضان","juma'a":"جمعة",musulmi:"مسلم",musulunci:"إسلام",aljanna:"الجنة","addu'a":"دعاء"};
+let custom={};
 
-  const SANNU_AI_URL =
-    "https://odd-king-5bcf.lawanahmadt03.workers.dev";
+const TOK=/sh|ts|ch|gw|kw|ky|gy|ƙw|ƙy|aa|ii|uu|ee|oo|ai|au|./gsu;
+const PUNCT={",":"،",";":"؛","?":"؟"};
 
-  const chatForm = document.getElementById("chatForm");
-  const chatInput = document.getElementById("chatInput");
-  const chatMessages = document.getElementById("chatMessages");
-  const sendButton = document.getElementById("sendButton");
-
-  let isSending = false;
-  let conversation = [];
-
-  document.getElementById("year").textContent =
-    new Date().getFullYear();
-
-  function scrollChat() {
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+function conv(word,h){
+  let w=word.toLowerCase().normalize("NFC").replace(/[’ʼ`]/g,"'")
+    .replace(/'b/g,"ɓ").replace(/'d/g,"ɗ").replace(/'k/g,"ƙ").replace(/'y/g,"ƴ");
+  const key=w; if(custom[key])return custom[key]; if(DICT[key])return DICT[key];
+  const T=w.match(TOK)||[];let o="";
+  for(let i=0;i<T.length;i++){
+    const t=T[i],first=o==="",last=i===T.length-1;
+    if(C[t]){
+      o+=C[t];
+      if(T[i+1]===t&&!"'".includes(t)){i++;if(h)o+=SH}   // doubled consonant
+    }else if(t.length===1&&V[t]){                         // short vowel
+      if(first)o+=(t==="e"||t==="o")?V[t]:"ا"+(h?M[t]:"");
+      else if(last)o+=(h&&M[t]?M[t]:"")+V[t];
+      else if(t==="e"||t==="o")o+=V[t];
+      else if(h)o+=M[t];
+    }else if(t==="aa")o+=first?"آ":"ا";
+    else if(t==="ii")o+=(first?"ا":"")+(h?M.i:"")+"ي";
+    else if(t==="uu")o+=(first?"ا":"")+(h?M.u:"")+"و";
+    else if(t==="ee")o+="ێ";
+    else if(t==="oo")o+="ۆ";
+    else if(t==="ai")o+=(first?"ا":"")+(h?M.a:"")+"ي"+(h&&!last?SK:"");
+    else if(t==="au")o+=(first?"ا":"")+(h?M.a:"")+"و"+(h&&!last?SK:"");
+    else o+=PUNCT[t]||t;
   }
+  return o;
+}
+const convText=(s,h)=>s.replace(/[\p{L}'’ʼ`]+/gu,w=>conv(w,h)).replace(/[,;?]/g,c=>PUNCT[c]);
 
-  function addMessage(role, text) {
-    const message = document.createElement("div");
-    message.className = "message " + (role === "user" ? "user" : "ai");
+/* ===== UI ===== */
+const $=s=>document.querySelector(s),inp=$("#i"),out=$("#o"),hk=$("#h");
+const run=()=>{out.textContent=convText(inp.value,hk.checked)};
+inp.oninput=run;hk.onchange=run;
+document.querySelectorAll(".keys button").forEach(b=>b.onclick=()=>{
+  const s=inp.selectionStart,e=inp.selectionEnd;inp.setRangeText(b.textContent,s,e,"end");inp.focus();run()});
+const ex=$("#ex");
+["Barka da safe","Na gode","Ina kwana?","Allah ya kiyaye","Sannu da zuwa"].forEach(t=>{
+  const b=document.createElement("button");b.className="chip";b.textContent=t;b.onclick=()=>{inp.value=t;run()};ex.appendChild(b)});
+$("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(out.textContent);$("#cp").textContent="An kwafa ✓"}catch(e){$("#cp").textContent="Kwafa da hannu"}setTimeout(()=>$("#cp").textContent="Kwafa · Copy",1500)};
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
+/* custom words, saved in this browser */
+try{custom=JSON.parse(localStorage.getItem("ajamiCustom")||"{}")}catch(e){}
+$("#cw").value=Object.entries(custom).map(([k,v])=>k+"="+v).join("\n");
+$("#sv").onclick=()=>{
+  custom={};$("#cw").value.split("\n").forEach(l=>{const p=l.split("=");if(p.length>=2&&p[0].trim())custom[p[0].trim().toLowerCase()]=p.slice(1).join("=").trim()});
+  try{localStorage.setItem("ajamiCustom",JSON.stringify(custom))}catch(e){}
+  $("#sv").textContent="An ajiye ✓";setTimeout(()=>$("#sv").textContent="Ajiye · Save",1500);run()};
 
-    const label = document.createElement("span");
-    label.className = "message-label";
-    label.textContent = role === "user" ? "Kai" : "Sannu AI";
-
-    const content = document.createElement("div");
-    content.textContent = text;
-
-    bubble.appendChild(label);
-    bubble.appendChild(content);
-    message.appendChild(bubble);
-    chatMessages.appendChild(message);
-
-    scrollChat();
-    return message;
-  }
-
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.style.display = "block";
-
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => {
-      toast.style.display = "none";
-    }, 3500);
-  }
-
-  async function sendMessage(message) {
-    if (!message || isSending) return;
-
-    isSending = true;
-    sendButton.disabled = true;
-    chatInput.disabled = true;
-    sendButton.textContent = "...";
-
-    addMessage("user", message);
-
-    const typing = document.createElement("div");
-    typing.className = "typing";
-    typing.textContent = "Sannu AI yana shirya amsa...";
-    chatMessages.appendChild(typing);
-    scrollChat();
-
-    try {
-      const response = await fetch(SANNU_AI_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: message
-        })
-      });
-
-      let data;
-
-      try {
-        data = await response.json();
-      } catch {
-        throw new Error("Server bai dawo da amsa mai inganci ba.");
-      }
-
-      if (!response.ok || !data.success) {
-        console.error("Sannu AI response error:", data);
-        throw new Error(
-          data.error || "Ba a samu amsa daga AI ba."
-        );
-      }
-
-      if (!data.reply) {
-        throw new Error("Amsar AI ba ta cika ba.");
-      }
-
-      addMessage("ai", data.reply);
-
-      conversation.push(
-        { role: "user", content: message },
-        { role: "assistant", content: data.reply }
-      );
-
-      // Ajiye tattaunawar a memory na wannan shafin kawai.
-      // Ba a adana ta a database ba.
-      if (conversation.length > 20) {
-        conversation = conversation.slice(-20);
-      }
-
-    } catch (error) {
-      console.error("Sannu AI error:", error);
-
-      addMessage(
-        "ai",
-        "Yi haƙuri, ban iya haɗuwa da AI ba a yanzu. " +
-        "Duba haɗin intanet ɗinka ka sake gwadawa. " +
-        "Idan matsalar ta ci gaba, sai a duba Cloudflare Worker da API."
-      );
-
-      showToast("An samu matsalar haɗi da AI.");
-    } finally {
-      typing.remove();
-      isSending = false;
-      sendButton.disabled = false;
-      chatInput.disabled = false;
-      sendButton.textContent = "Aika ↑";
-      chatInput.focus();
-    }
-  }
-
-  chatForm.addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const message = chatInput.value.trim();
-    if (!message) return;
-
-    chatInput.value = "";
-    sendMessage(message);
-  });
-
-  function askLesson(prompt) {
-    document.getElementById("chat").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
-    chatInput.value = prompt;
-    chatInput.focus();
-
-    // Aika tambayar kai tsaye domin sauƙaƙa amfani.
-    sendMessage(prompt);
-  }
-
-  function startLearning() {
-    askLesson(
-      "Ina son koyon harshen Hausa daga farko. " +
-      "Fara da darasi na farko, ka yi bayani mai sauƙi " +
-      "tare da misalai da atisaye."
-    );
-  }
-
-  function showLessons() {
-    document.getElementById("lessons").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
+/* letter chart */
+$("#ch").innerHTML=[..."bɓtjcdɗrsfƙkghlmnwyƴz"].concat(["sh","ts"]).map(k=>`<tr><td>${k}</td><td class="a">${C[k]}</td></tr>`).join("")
+  +Object.keys(V).map(k=>`<tr><td>${k}</td><td class="a">${V[k]}</td></tr>`).join("");
 </script>
-
 </body>
 </html>
